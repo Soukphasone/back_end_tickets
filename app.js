@@ -17,24 +17,11 @@ app.use((req, res, next) => {
   );
   next();
 });
-// populate
-app.use((req, res, next) => {
-  const _populate = req.query.p || "";
-  const _p = _populate.split("||");
-  var _poppulates = _p[0];
-  for (let i = 1; i < _p.length; i++) {
-    _poppulates += " " + _p[i];
-  }
-  req.populate = _poppulates || "";
-  delete req.query.p;
-  next();
-});
 // routes
 require("./src/routes/auth.routes")(app);
 require("./src/routes/order.routes")(app);
 require("./src/routes/report.routes")(app);
 require("./src/routes/user.routes")(app);
-
 
 const port = process.env.PORT || 8000;
 server.listen(port, () => {

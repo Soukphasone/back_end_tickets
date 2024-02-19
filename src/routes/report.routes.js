@@ -6,4 +6,4 @@ module.exports = async (app) => {
 
   app.get("/report/orderAllStatus", controller.reportAllStatus);
   app.get("/report/orderByStatus", controller.reportByStatus);
-}
+};

@@ -1,11 +1,10 @@
 {
   "name": "online-store",
   "version": "1.0.0",
-  "description": "",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "nodemon start"
   },
   "keywords": [],
   "author": "",
@@ -23,5 +22,6 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "mongoose": "^6.6.5"
-  }
+  },
+  "description": ""
 }
