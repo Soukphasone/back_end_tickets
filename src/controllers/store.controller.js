@@ -1,23 +1,29 @@
+const { default: mongoose } = require("mongoose");
 const db = require("../models");
-const Order = db.order;
+const Store = db.store;
 
-exports.orders = async (req, res) => {
+exports.stores = async (req, res) => {
   try {
     // let _skip = parseInt(req.query.skip) || 0;
     // let _limit = parseInt(req.query.limit) || 100;
     const findby = req.query;
-    if (findby.sign) {
-      findby.sign = { $regex: findby.sign };
+    if (findby.name) {
+      findby.name = { $regex: findby.name};
     } else {
-      delete findby.sign
+      delete findby.name
     }
-    if (findby.note) {
-      findby.note = { $regex: findby.note };
+    if (findby.status) {
+      findby.status = { $regex: findby.status};
     } else {
-      delete findby.note
+      delete findby.status
+    }
+    if (findby.packageId) {
+      findby.packageId = new mongoose.Types.ObjectId(findby.packageId) ;
+    } else {
+      delete findby.packageId
     }
     if (findby.dateFrom && findby.dateTo) {
-      findby.createdAt = {
+      findby.expire = {
         $gte: new Date(findby.dateFrom + "T00:00:00.000Z"),
         $lt: new Date(findby.dateTo + "T23:59:59.000Z"),
       }
@@ -30,7 +36,9 @@ exports.orders = async (req, res) => {
 
     delete findby.skip;
     delete findby.limit;
-    const _search = await Order.find({ ...findby })
+
+    // console.log(findby)
+    const _search = await Store.find({ ...findby })
       // .skip(_skip)
       // .limit(_limit)
       .exec();
@@ -43,13 +51,13 @@ exports.orders = async (req, res) => {
     });
   }
 };
-
-exports.order = async (req, res) => {
+// By id
+exports.store = async (req, res) => {
   try {
-    const _order = await Order.findById({
+    const _store = await Store.findById({
       _id: req.params.id,
     }).exec();
-    res.status(200).json(_order);
+    res.status(200).json(_store);
   } catch (err) {
     console.log(err);
     return res.status(500).json({
@@ -59,12 +67,12 @@ exports.order = async (req, res) => {
   }
 };
 
-exports.orderCreate = async (req, res) => {
+exports.storeCreate = async (req, res) => {
   try {
-    const _orderCreate = await Order.create({
+    const _storeCreate = await Store.create({
       ...req.body,
     });
-    res.status(200).json(_orderCreate);
+    res.status(200).json(_storeCreate);
   } catch (err) {
     console.log(err);
     return res.status(500).json({
@@ -74,9 +82,9 @@ exports.orderCreate = async (req, res) => {
   }
 };
 
-exports.orderUpdate = async (req, res) => {
+exports.storeUpdate = async (req, res) => {
   try {
-    const _orderUpdate = await Order.findOneAndUpdate(
+    const _storeUpdate = await Store.findOneAndUpdate(
       { _id: req.params.id },
       {
         $set: {
@@ -86,7 +94,7 @@ exports.orderUpdate = async (req, res) => {
         },
       }
     );
-    const _order = await Order.findOne({ _id: req.params.id });
+    const _order = await Store.findOne({ _id: req.params.id });
     res.status(200).json(_order);
   } catch (err) {
     console.log(err);
@@ -97,9 +105,9 @@ exports.orderUpdate = async (req, res) => {
   }
 };
 
-exports.orderDelete = async (req, res) => {
+exports.storeDelete = async (req, res) => {
   try {
-    const _orderDelete = await Order.remove({
+    const _storeDelete = await Store.remove({
       _id: req.params.id,
     });
     return res.status(200).json({ message: "Success!" });

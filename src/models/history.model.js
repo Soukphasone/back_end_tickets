@@ -1,34 +1,31 @@
 const mongoose = require("./mongoose");
 const Schema = mongoose.Schema;
 
-const store = mongoose.db.model(
-  "bill",
+const history = mongoose.db.model(
+  "history",
   new mongoose.Schema({
-    order: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "order",
-      },
-    ],
-    sum: {
-      type: String,
-      default: "0",
+    duration_day: Number,
+    price: Number,
+    storeId: {
+      type: Schema.Types.ObjectId,
+      ref: "store",
+    },
+    packageId: {
+      type: Schema.Types.ObjectId,
+      ref: "package",
     },
     createdAt: {
       type: Date,
       default: Date.now,
     },
-    createdBy: {
+    createBy: {
       type: Schema.Types.ObjectId,
-      ref: "user",
-      
     },
     updatedAt: Date,
     updatedBy: {
       type: Schema.Types.ObjectId,
-      ref: "user",
     },
   })
 );
 
-module.exports = store;
+module.exports = history;

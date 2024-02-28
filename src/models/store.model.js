@@ -2,39 +2,45 @@ const mongoose = require("./mongoose");
 const Schema = mongoose.Schema;
 
 const store = mongoose.db.model(
-  "order",
+  "store",
   new mongoose.Schema({
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: "user",
+    name: {
+      type: String,
     },
-    sign: String,
-    carType: String,
-    money: String,
-    amount: Number,
-    note: String,
+    phone: {
+      type: String,
+    },
+    packageName: {
+      type: String,
+    },
+    packageId: {
+      type: Schema.Types.ObjectId,
+      ref: "package",
+    },
     status: {
       type: String,
-      enum: ["ONLINE", "OFFLINE"],
-      default: "ONLINE",
+      enum: ["Active", "Block"],
+      default: "Active",
     },
-    createdAt: {
+    active: {
+      type: Date,
+    },
+
+    start: {
       type: Date,
       default: Date.now,
     },
-    createdOut: {
+    expire: {
       type: Date,
       default: Date.now,
     },
-    createdBy: {
+    createBy: {
       type: Schema.Types.ObjectId,
-      ref: "user",
     },
     updatedAt: Date,
     updatedBy: {
       type: Schema.Types.ObjectId,
-      ref: "user",
-    }
+    },
   })
 );
 
