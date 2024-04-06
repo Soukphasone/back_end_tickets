@@ -19,7 +19,7 @@ exports.orders = async (req, res) => {
     if (findby.dateFrom && findby.dateTo) {
       findby.createdAt = {
         $gte: new Date(findby.dateFrom + "T00:00:00.000Z"),
-        $lt: new Date(findby.dateTo + "T23:59:59.000Z"),
+        $lt: new Date(findby.dateTo + "T23:59:59.999Z"),
       }
     } else {
       delete findby.dateFrom

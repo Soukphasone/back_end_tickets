@@ -8,6 +8,10 @@ const store = mongoose.db.model(
       type: Schema.Types.ObjectId,
       ref: "user",
     },
+    priceId:{
+      type: Schema.Types.ObjectId,
+      ref: "price",
+    },
     sign: String,
     carType: String,
     money: String,
@@ -15,7 +19,7 @@ const store = mongoose.db.model(
     note: String,
     status: {
       type: String,
-      enum: ["ONLINE", "OFFLINE"],
+      enum: ["ONLINE", "OFFLINE", "CANCEL",],
       default: "ONLINE",
     },
     createdAt: {

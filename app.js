@@ -22,6 +22,7 @@ require("./src/routes/auth.routes")(app);
 require("./src/routes/order.routes")(app);
 require("./src/routes/report.routes")(app);
 require("./src/routes/user.routes")(app);
+require("./src/routes/price.routes")(app);
 
 const port = process.env.PORT || 8000;
 server.listen(port, () => {

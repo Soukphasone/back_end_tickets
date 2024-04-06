@@ -5,11 +5,6 @@ const user = mongoose.db.model(
   "user",
   new mongoose.Schema({
     name: String,
-    // username: {
-    //   type: String,
-    //   require: true,
-    //   unique: true,
-    // },
     username: String,
     password: String,
     status: {
