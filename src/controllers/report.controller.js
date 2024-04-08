@@ -8,7 +8,6 @@ exports.reportAllStatus = async (req, res) => {
     let dataGroup = _.groupBy(_orders, "status");
     let groupedData = [];
     for (const [key, value] of Object.entries(dataGroup)) {
-      console.log("value", value);
       let { totalBikes, totalCars, totalCycle } = 0;
       let status = "";
       value.map((item) => {
@@ -16,7 +15,7 @@ exports.reportAllStatus = async (req, res) => {
         if (item.carType === "ລົດໃຫຍ່") {
           totalCars++;
         }
-        if (item.carType === "ລົດຖີບ") {
+        if (item.carType === "ລົດ VIP") {
           totalCycle++;
         }
         if (item.carType === "ລົດຈັກ") {
@@ -59,7 +58,7 @@ exports.reportByStatus = async (req, res) => {
         if (_orders[i].carType === "ລົດໃຫຍ່") {
           totalCars++;
         }
-        if (_orders[i].carType === "ລົດຖີບ") {
+        if (_orders[i].carType === "ລົດ VIP") {
           totalCycle++;
         }
         if (_orders[i].carType === "ລົດຈັກ") {
@@ -100,7 +99,7 @@ exports.reportCountCarType = async (req, res) => {
       userId: userId,
     }).exec();
     const _countcycle = await Order.count({
-      carType: { $regex: "ລົດຖີບ" },
+      carType: { $regex: "ລົດ VIP" },
       status: status,
       userId: userId,
     }).exec();
