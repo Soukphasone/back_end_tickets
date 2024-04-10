@@ -58,7 +58,7 @@ exports.priceUpdate = async (req, res) => {
       {
         $set: {
           ...req.body,
-          createdOut: new Date(),
+          updatedAt: new Date(),
         },
       }
     );

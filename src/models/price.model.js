@@ -15,6 +15,10 @@ const package = mongoose.db.model(
       type: Date,
       default: Date.now,
     },
+    updatedAt: {
+      type: Date,
+      default: Date.now,
+    },
     createBy: {
       type: Schema.Types.ObjectId,
       ref: "user",

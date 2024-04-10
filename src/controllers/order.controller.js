@@ -99,7 +99,7 @@ exports.orderUpdate = async (req, res) => {
 
 exports.orderDelete = async (req, res) => {
   try {
-    const _orderDelete = await Order.remove({
+    await Order.remove({
       _id: req.params.id,
     });
     return res.status(200).json({ message: "Success!" });
