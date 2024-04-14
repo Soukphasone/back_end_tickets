@@ -6,16 +6,21 @@ exports.orders = async (req, res) => {
     // let _skip = parseInt(req.query.skip) || 0;
     // let _limit = parseInt(req.query.limit) || 100;
     const findby = req.query;
+    if (findby.letter) {
+      findby.letter = { $regex: findby.letter };
+    } else {
+      delete findby.letter
+    }
     if (findby.sign) {
       findby.sign = { $regex: findby.sign };
     } else {
       delete findby.sign
     }
-    if (findby.note) {
-      findby.note = { $regex: findby.note };
-    } else {
-      delete findby.note
-    }
+    // if (findby.sign) {
+    //   findby.sign = parseInt(findby.sign);
+    // } else {
+    //   delete findby.sign
+    // }
     if (findby.dateFrom && findby.dateTo) {
       findby.createdAt = {
         $gte: new Date(findby.dateFrom + "T00:00:00.000Z"),
@@ -33,6 +38,25 @@ exports.orders = async (req, res) => {
     const _search = await Order.find({ ...findby })
       // .skip(_skip)
       // .limit(_limit)
+      .exec();
+    res.status(200).json(_search);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: `Internal Server Error:${err}`,
+      code: "INTERNAL_SERVER_ERROR",
+    });
+  }
+};
+exports.orderConfirm = async (req, res) => {
+  try {
+    const findby = req.query;
+    if (findby.sign) {
+      findby.sign = parseInt(findby.sign);
+    } else {
+      delete findby.sign
+    }
+    const _search = await Order.find({ ...findby })
       .exec();
     res.status(200).json(_search);
   } catch (err) {
@@ -76,7 +100,7 @@ exports.orderCreate = async (req, res) => {
 
 exports.orderUpdate = async (req, res) => {
   try {
-    const _orderUpdate = await Order.findOneAndUpdate(
+    await Order.findOneAndUpdate(
       { _id: req.params.id },
       {
         $set: {
