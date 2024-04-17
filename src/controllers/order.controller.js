@@ -12,15 +12,10 @@ exports.orders = async (req, res) => {
       delete findby.letter
     }
     if (findby.sign) {
-      findby.sign = { $regex: findby.sign };
+      findby.sign = parseInt(findby.sign);
     } else {
       delete findby.sign
     }
-    // if (findby.sign) {
-    //   findby.sign = parseInt(findby.sign);
-    // } else {
-    //   delete findby.sign
-    // }
     if (findby.dateFrom && findby.dateTo) {
       findby.createdAt = {
         $gte: new Date(findby.dateFrom + "T00:00:00.000Z"),
