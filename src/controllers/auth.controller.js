@@ -24,7 +24,7 @@ exports.login = async (req, res) => {
       },
       process.env.SECRET_KEY,
       {
-        expiresIn: "3m",
+        expiresIn: "24h",
       }
     );
 
