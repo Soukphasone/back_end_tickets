@@ -1,90 +1,16 @@
 const db = require("../models");
-const _ = require("lodash");
 const Order = db.order;
-exports.reportAllStatus = async (req, res) => {
-  try {
-    const _orders = await Order.find(req.query).exec();
-    // console.log("object", _orders)
-    let dataGroup = _.groupBy(_orders, "status");
-    let groupedData = [];
-    for (const [key, value] of Object.entries(dataGroup)) {
-      let { totalBikes, totalCars, totalCycle } = 0;
-      let status = "";
-      value.map((item) => {
-        status = item.status;
-        if (item.carType === "ລົດໃຫຍ່") {
-          totalCars++;
-        }
-        if (item.carType === "ລົດ VIP") {
-          totalCycle++;
-        }
-        if (item.carType === "ລົດຈັກ") {
-          totalBikes++;
-        }
-      });
-      let orderGroup = {
-        status,
-        totalBikes,
-        totalCars,
-        totalCycle,
-      };
-
-      groupedData.push(orderGroup);
-    }
-
-    return res.status(200).json({
-      data: groupedData,
-    });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      message: `Internal Server Error:${err}`,
-      code: "INTERNAL_SERVER_ERROR",
-    });
-  }
-};
-
-exports.reportByStatus = async (req, res) => {
-  try {
-    const _orders = await Order.find({ status: req.query.status }).exec();
-    console.log("req", req.query.status);
-    // console.log("object", _orders)
-    let groupedData = {};
-    if (_orders.length > 0) {
-      let totalBikes = 0;
-      let totalCars = 0;
-      let totalCycle = 0;
-      for (let i = 0; i < _orders.length; i++) {
-        if (_orders[i].carType === "ລົດໃຫຍ່") {
-          totalCars++;
-        }
-        if (_orders[i].carType === "ລົດ VIP") {
-          totalCycle++;
-        }
-        if (_orders[i].carType === "ລົດຈັກ") {
-          totalBikes++;
-        }
-      }
-      groupedData = {
-        totalBikes,
-        totalCars,
-        totalCycle,
-      };
-
-      // groupedData = {}
-    }
-
-    return res.status(200).json({
-      data: groupedData,
-    });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      message: `Internal Server Error:${err}`,
-      code: "INTERNAL_SERVER_ERROR",
-    });
-  }
-};
+const today = new Date();
+const startOfToday = new Date(
+  today.getFullYear(),
+  today.getMonth(),
+  today.getDate()
+);
+const endOfToday = new Date(
+  today.getFullYear(),
+  today.getMonth(),
+  today.getDate() + 1
+);
 exports.reportCountCarType = async (req, res) => {
   try {
     const { status, userId } = req.query;
@@ -98,15 +24,9 @@ exports.reportCountCarType = async (req, res) => {
       status: status,
       userId: userId,
     }).exec();
-    const _countcycle = await Order.count({
-      carType: { $regex: "ລົດ VIP" },
-      status: status,
-      userId: userId,
-    }).exec();
     res.status(200).json({
       totalCars: _countcar,
       totalBike: _countbike,
-      totalCycle: _countcycle,
     });
   } catch (err) {
     console.log(err);
@@ -116,23 +36,96 @@ exports.reportCountCarType = async (req, res) => {
     });
   }
 };
-exports.reportAmountMoney = async (req, res) => {
+//reporAmount for today
+exports.ReportAmoutDay = async (req, res) => {
   try {
-    const pipeline = [
+
+    const _reportDay = await Order.aggregate([
       {
-        $group: {
-          _id: "$money",
-          totalAmount: { $sum: "$amount" },
+        $match: {
+          createdAt: { $gte: startOfToday, $lt: endOfToday },
         },
       },
-    ];
-
-    const result = await Order.aggregate(pipeline);
-    res.status(200).json(result);
+      {
+        $group: {
+          _id: "$userId",
+          AmountToday: {
+            $sum: {
+              $cond: [
+                { $in: ["$status", ["ONLINE", "OFFLINE"]] },
+                "$amount",
+                0
+              ]
+            },
+          },
+        },
+      },
+    ]);
+    res.status(200).json(_reportDay);
   } catch (err) {
     console.log(err);
     return res.status(500).json({
       message: `Internal Server Error:${err}`,
+      code: "INTERNAL_SERVER_ERROR",
+    });
+  }
+};
+//Count car for today
+exports.reportCountCarTypeToday = async (req, res) => {
+  try {
+    const { status, userId } = req.query;
+    const _countcar = await Order.countDocuments({
+      carType: { $regex: "ລົດໃຫຍ່" },
+      status: status,
+      userId: userId,
+      createdAt: { $gte: startOfToday, $lte: endOfToday }
+    }).exec();
+
+    const _countbike = await Order.countDocuments({
+      carType: { $regex: "ລົດຈັກ" },
+      status: status,
+      userId: userId,
+      createdAt: { $gte: startOfToday, $lte: endOfToday }
+    }).exec();
+
+    res.status(200).json({
+      totalCars: _countcar,
+      totalBike: _countbike,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      message: `Internal Server Error: ${err}`,
+      code: "INTERNAL_SERVER_ERROR",
+    });
+  }
+};
+exports.Cancelbill = async (req, res) => {
+  try {
+    const { status, userId } = req.query;
+    const findby = {
+      status: status,
+      userId: userId,
+      createdAt: {
+        $gte: startOfToday,
+        $lt: endOfToday,
+      },
+    };
+
+    if (req.query.letter) {
+      findby.letter = { $regex: req.query.letter };
+    }
+
+    if (req.query.sign) {
+      findby.sign = parseInt(req.query.sign);
+    }
+
+    const _search = await Order.find(findby).exec();
+    res.status(200).json(_search);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: `Internal Server Error: ${err}`,
       code: "INTERNAL_SERVER_ERROR",
     });
   }
