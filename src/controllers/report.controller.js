@@ -1,17 +1,10 @@
 const mongoose = require('mongoose');
 const db = require("../models");
 const Order = db.order;
-const today = new Date();
-const startOfToday = new Date(
-  today.getFullYear(),
-  today.getMonth(),
-  today.getDate()
-);
-const endOfToday = new Date(
-  today.getFullYear(),
-  today.getMonth(),
-  today.getDate() + 1
-);
+const startOfToday = new Date();
+startOfToday.setHours(0, 0, 0, 0); // Set time to start of today
+const endOfToday = new Date();
+endOfToday.setHours(23, 59, 59, 999); // Set time to end of today
 exports.reportCountCarType = async (req, res) => {
   try {
     const { status, userId } = req.query;
