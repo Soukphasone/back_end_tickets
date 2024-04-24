@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const db = require("../models");
 const Order = db.order;
 const today = new Date();
@@ -36,19 +37,19 @@ exports.reportCountCarType = async (req, res) => {
     });
   }
 };
-//reporAmount for today
 exports.ReportAmoutDay = async (req, res) => {
   try {
-
+    const { userId } = req.query;
     const _reportDay = await Order.aggregate([
       {
         $match: {
+          userId: mongoose.Types.ObjectId(userId),
           createdAt: { $gte: startOfToday, $lt: endOfToday },
         },
       },
       {
         $group: {
-          _id: "$userId",
+          _id: null,
           AmountToday: {
             $sum: {
               $cond: [
@@ -61,11 +62,12 @@ exports.ReportAmoutDay = async (req, res) => {
         },
       },
     ]);
-    res.status(200).json(_reportDay);
+    const amountToday = _reportDay.length > 0 ? _reportDay[0].AmountToday : 0;
+    res.status(200).json({ AmountToday: amountToday });
   } catch (err) {
     console.log(err);
     return res.status(500).json({
-      message: `Internal Server Error:${err}`,
+      message: `Internal Server Error: ${err}`,
       code: "INTERNAL_SERVER_ERROR",
     });
   }
@@ -100,6 +102,7 @@ exports.reportCountCarTypeToday = async (req, res) => {
     });
   }
 };
+
 exports.Cancelbill = async (req, res) => {
   try {
     const { status, userId } = req.query;
