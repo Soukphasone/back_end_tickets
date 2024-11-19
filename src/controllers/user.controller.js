@@ -9,8 +9,8 @@ exports.users = async (req, res) => {
 
     const findby = req.query;
 
-    if (findby.name) {
-      findby.name = { $regex: findby.name };
+    if (findby.username) {
+      findby.username = { $regex: findby.username };
     }
 
     delete findby.skip;

@@ -10,8 +10,8 @@ const verifyToken = async (req, res, next) => {
     if (token.split(" ")[0] !== "STORE") {
       return res.status(403).json({ message: "INVALID_TOKEN" });
     }
-
     let userAuthData = jwt.verify(tokenSplit[1], process.env.SECRET_KEY);
+    console.log("UserAuthData:", userAuthData)
     let findUser = {};
 
     findUser = await User.findOne({ _id: userAuthData.id });

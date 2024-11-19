@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const user = mongoose.db.model(
   "user",
   new mongoose.Schema({
-    name: String,
+    // name: String,
     username: String,
     password: String,
     status: {
