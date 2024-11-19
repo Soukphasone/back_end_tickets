@@ -11,6 +11,8 @@ exports.users = async (req, res) => {
 
     if (findby.username) {
       findby.username = { $regex: findby.username };
+    } else {
+      delete findby.username
     }
 
     delete findby.skip;
